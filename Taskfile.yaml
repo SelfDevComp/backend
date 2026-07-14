@@ -11,7 +11,7 @@ tasks:
   build-backend:
     desc: build backend side for develope
     cmds:
-      - docker build -t self-dev-backend -f infra/Dockerfile.backend.dev .
+      - docker build -t self-dev-backend -f infra/Dockerfile .
 
   build-frontend:
     desc: build frontend side for develope
