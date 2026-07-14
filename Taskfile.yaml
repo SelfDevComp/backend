@@ -6,107 +6,18 @@ tasks:
       - task --list
     silent: true
 
-### BUILD
-
-  build-backend:
+  build:
     desc: build backend side for develope
     cmds:
       - docker build -t self-dev-backend -f infra/Dockerfile .
 
-  build-frontend:
-    desc: build frontend side for develope
+  dev:
+    desc: run backend in real time for develope
     cmds:
-      - docker build -t self-dev-frontend -f infra/Dockerfile.frontend.dev .
-
-  build:
-    desc: build backend and frontend for develope
-    cmds:
-      - task dev-build-backend
-      - task dev-build-frontend
-
-### COMPOSE (DEV)
-
-  dev-up:
-    desc: start all containers for develope with open backend ports and database
-    cmds:
-      - docker compose -f ./infra/docker-compose.dev.yaml up -d --build
-
-  dev-down:
-    desc: stop all containers 
-    cmds:
-      - docker compose -f ./infra/docker-compose.dev.yaml down
-
-### COMPOSE (PROD)
-
-  prod-up:
-    desc: start all containers for production 
-    cmds:
-      - docker compose -f ./infra/docker-compose.prod.yaml up -d
-
-  prod-down:
-    desc: stop all containers 
-    cmds:
-      - docker compose -f ./infra/docker-compose.prod.yaml down
-
-### LINTING
+      - go run cmd/api/main.go
 
   lint:
     desc: formatting project
     cmds:
       - cd backend && go fmt ./...
       - cd backend && golangci-lint run --fix
-      - cd frontend && npx prettier . --write
-
-
-### DATABASE 
-
-  migration:
-    desc: create new migration file. example "task migration NAME=name_of_migration"
-    cmds:
-      - goose -s create {{.NAME}} sql -dir backend/migrations
-    vars:
-      NAME: '{{.NAME | default "migration"}}'
-
-  migrate:
-    desc: choose last version of migrations
-    cmds:
-      - goose up -env ./infra/.env
-
-  migrate-one:
-    desc: choose next version of migrations 
-    cmds:
-      - goose up-by-one -env ./infra/.env
-
-  rollback:
-    desc: roll back all migrations
-    cmds:
-      - goose reset -env ./infra/.env
-
-  rollback-one:
-    desc: comeback to previous version of migrations
-    cmds:
-      - goose down -env ./infra/.env
-
-### LOGS
-
-  logs:
-    desc: check logs in real time of all containers
-    cmds:
-      - docker compose -f ./infra/docker-compose.dev.yaml logs -f 
-
-  logs-backend:
-    desc: check logs in real time in backend container
-    cmds:
-      - docker logs -f self-dev-backend
-
-  logs-frontend:
-    desc: check logs in real time in frontend container
-    cmds:
-      - docker logs -f self-dev-frontend
-
-### DEV
-
-  dev-frontend:
-    desc: up only frontend side of project and develope in real time
-    cmds:
-      - cd frontend && npm run dev
