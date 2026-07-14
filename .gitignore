@@ -26,3 +26,4 @@ coverage
 /cypress/screenshots/
 __screenshots__/
 *.timestamp-*-*.mjs
+.infra/logs/
