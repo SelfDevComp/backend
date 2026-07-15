@@ -19,5 +19,5 @@ tasks:
   lint:
     desc: formatting project
     cmds:
-      - cd backend && go fmt ./...
-      - cd backend && golangci-lint run --fix
+      - go fmt ./...
+      - golangci-lint run --fix
