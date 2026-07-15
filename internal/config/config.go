@@ -66,7 +66,7 @@ func NewConfig() (config, error) {
 		},
 		Database: ConfigDatabase{
 			PostgresURL: getEnv("POSTGRES_URL", "postgres://admin:admin@db:5432/self-dev"),
-			RedisURL: getEnv("REDIS_URL", "redis://:admin@redis:6379/0"),
+			RedisURL:    getEnv("REDIS_URL", "redis://:admin@redis:6379/0"),
 		},
 		JWT: ConfigJWT{
 			Secret: getEnv("SECRET", ""),
