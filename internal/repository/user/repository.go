@@ -26,8 +26,8 @@ func NewRepository(pool *pgxpool.Pool, logger *zap.Logger) *repository {
 
 func (r *repository) Create(ctx context.Context, user *model.User) error {
 	query := `
-	INSERT INTO users (user_id, sub, username, email)
-	VALUES ($1, $2, $3,	$4)
+	INSERT INTO users (user_id, sub, username)
+	VALUES ($1, $2, $3)
 	`
 
 	_, err := r.pool.Exec(
@@ -36,7 +36,6 @@ func (r *repository) Create(ctx context.Context, user *model.User) error {
 		user.UserId,
 		user.Sub,
 		user.Username,
-		user.Email,
 	)
 	if err != nil {
 		return err
