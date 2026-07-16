@@ -18,7 +18,7 @@ func newClient(id, secret string) *client {
 }
 
 func (c *client) getAccess(code, state string) (string, error) {
-	token, err := casdoorsdk.GetOAuthToken(code, state)
+	token, err := c.casdoor.GetOAuthToken(code, state)
 	return token.AccessToken, err
 }
 
