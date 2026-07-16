@@ -14,7 +14,7 @@ type client struct {
 
 func newClient(id, secret string) *client {
 	return &client{
-		casdoor: casdoorsdk.NewClient("endpoint", id, secret, "certificate", "self-dev", "self-dev-backend"),
+		casdoor: casdoorsdk.NewClient("https://stage.auth.self-dev.tech", id, secret, "certificate", "self-dev", "self-dev-backend"),
 	}
 }
 
