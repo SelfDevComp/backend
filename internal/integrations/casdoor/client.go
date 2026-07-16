@@ -2,6 +2,7 @@ package casdoor
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
@@ -13,13 +14,22 @@ type client struct {
 
 func newClient(id, secret string) *client {
 	return &client{
-		casdoor: casdoorsdk.NewClient("endpoint", id, secret, "certificate", "my-org", "my-app"),
+		casdoor: casdoorsdk.NewClient("endpoint", id, secret, "certificate", "self-dev", "self-dev-backend"),
 	}
 }
 
 func (c *client) getAccess(code, state string) (string, error) {
 	token, err := c.casdoor.GetOAuthToken(code, state)
-	return token.AccessToken, err
+
+	if err != nil {
+		return "", err
+	}
+
+	if token == nil {
+		return "", errors.New("empty token")
+	}
+
+	return token.AccessToken, nil
 }
 
 func (c *client) getUserInfo(token string) (AuthUser, error) {
