@@ -22,7 +22,8 @@ func NewHandler(service AuthService, logger *zap.Logger) *handler {
 
 func (h *handler) Callback(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
-
+	h.logger.Info("get code", zap.String("code", code))
+	
 	if code == "" {
 		http.Error(w, "missing code", http.StatusBadRequest)
 		return

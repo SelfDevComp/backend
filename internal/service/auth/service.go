@@ -51,10 +51,14 @@ func (s *Service) Login(ctx context.Context, code string) (string, error) {
 		return "", err
 	}
 
+	s.logger.Info("get access", zap.String("access_token", access))
+
 	authUser, err := s.authAdapter.GetUserInfo(access)
 	if err != nil {
 		return "", err
 	}
+
+	s.logger.Info("get auth user", zap.String("auth sub", authUser.Sub))
 
 	user, err := s.userService.GetUserBySub(ctx, authUser.Sub)
 	if err != nil {
@@ -68,11 +72,15 @@ func (s *Service) Login(ctx context.Context, code string) (string, error) {
 		return "", err
 	}
 
+	s.logger.Info("user", zap.String("user_id", user.UserId.String()))
+
 	sessionID := uuid.NewString()
 	err = s.repo.CreateSession(ctx, sessionID, user.UserId)
 	if err != nil {
 		return "", err
 	}
+
+	s.logger.Info("session", zap.String("sessionid", sessionID))
 
 	return sessionID, nil
 }
