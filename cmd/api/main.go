@@ -43,6 +43,7 @@ func main() {
 		_ = logger.Sync()
 	}()
 
+	logger.Info("client id", zap.String("client_id", cfg.Auth.ClientId))
 	ctx := context.Background()
 
 	pool, err := database.NewPostgres(ctx, cfg.Database)
