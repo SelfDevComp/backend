@@ -40,5 +40,6 @@ func (s *Service) GetUserBySub(ctx context.Context, userSub string) (model.User,
 	if err != nil {
 		return model.User{}, err
 	}
+	s.logger.Info("found user", zap.String("user id", user.Sub))
 	return user, nil
 }

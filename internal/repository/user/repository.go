@@ -52,7 +52,7 @@ func (r *repository) GetBySub(ctx context.Context, sub string) (model.User, erro
 	WHERE sub = $1
 	LIMIT 1
 	`
-
+	r.logger.Info("get sub", zap.String("sub", sub))
 	var user model.User
 
 	err := r.pool.QueryRow(ctx, query).Scan(
