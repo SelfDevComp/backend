@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -62,6 +63,10 @@ func (r *repository) GetBySub(ctx context.Context, sub string) (model.User, erro
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return model.User{}, appErrors.ErrUserNotFound
+	}
+
+	if err != nil { 
+		return model.User{}, fmt.Errorf("failed get user: %v", err)
 	}
 
 	return user, nil
