@@ -41,13 +41,12 @@ func (r *repository) Create(ctx context.Context, user *model.User) error {
 		return err
 	}
 
-	r.logger.Info("success insert user", zap.String("email", user.Email))
 	return nil
 }
 
 func (r *repository) GetBySub(ctx context.Context, sub string) (model.User, error) {
 	query := `
-	SELECT user_id, sub, username, email
+	SELECT user_id, sub, username
 	FROM users
 	WHERE sub = $1
 	LIMIT 1
@@ -59,7 +58,6 @@ func (r *repository) GetBySub(ctx context.Context, sub string) (model.User, erro
 		&user.UserId,
 		&user.Sub,
 		&user.Username,
-		&user.Email,
 	)
 
 	if errors.Is(err, pgx.ErrNoRows) {
