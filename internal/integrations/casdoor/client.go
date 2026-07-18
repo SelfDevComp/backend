@@ -45,7 +45,11 @@ func (c *client) getAccess(code, state string) (string, error) {
 }
 
 func (c *client) getUserInfo(token string) (AuthUser, error) {
-	request, err := http.NewRequest(http.MethodGet, "http://auth.self-dev.test/api/userinfo", http.NoBody)
+	request, err := http.NewRequest(
+		http.MethodGet,
+		"https://stage.auth.self-dev.tech/api/userinfo",
+		http.NoBody,
+	)
 	if err != nil {
 		return AuthUser{}, err
 	}
@@ -60,6 +64,10 @@ func (c *client) getUserInfo(token string) (AuthUser, error) {
 		return AuthUser{}, err
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		return AuthUser{}, fmt.Errorf("casdoor userinfo status: %s", response.Status)
+	}
 
 	var user AuthUser
 
