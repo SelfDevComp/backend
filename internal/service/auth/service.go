@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -46,6 +47,7 @@ func NewService(
 }
 
 func (s *Service) Login(ctx context.Context, code string) (string, error) {
+	fmt.Printf("authAdapter=%#v\n", s.authAdapter)
 	access, err := s.authAdapter.GetAccess(code, "")
 	if err != nil {
 		return "", err
