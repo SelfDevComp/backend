@@ -3,6 +3,7 @@ package casdoor
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/casdoor/casdoor-go-sdk/casdoorsdk"
@@ -13,9 +14,20 @@ type client struct {
 }
 
 func newClient(id, secret string) *client {
-	return &client{
-		casdoor: casdoorsdk.NewClient("https://stage.auth.self-dev.tech", id, secret, "certificate", "self-dev", "self-dev-backend"),
-	}
+    c := casdoorsdk.NewClient(
+        "https://stage.auth.self-dev.tech",
+        id,
+        secret,
+        "certificate",
+        "self-dev",
+        "self-dev-backend",
+    )
+
+    fmt.Printf("%#v\n", c)
+
+    return &client{
+        casdoor: c,
+    }
 }
 
 func (c *client) getAccess(code, state string) (string, error) {
