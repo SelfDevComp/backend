@@ -59,14 +59,15 @@ func (s *Service) Login(ctx context.Context, code string) (string, error) {
 	user, err := s.userService.GetUserBySub(ctx, authUser.Sub)
 	if err != nil {
 		if errors.Is(err, appErrors.ErrUserNotFound) {
-			user, err = s.userService.CreateUser(ctx, model.NewUser(authUser.Sub, authUser.Name, authUser.Email))
+			s.logger.Error("not found user", zap.String("email", authUser.Email), zap.Error(err))
+			user, err = s.userService.CreateUser(ctx, model.NewUser(authUser.Sub, authUser.Name, authUser.Name))
 			if err != nil {
+				s.logger.Error("failed create user", zap.String("email", authUser.Name), zap.Error(err))
 				return "", err
 			}
 		} else {
 			return "", err
 		}
-
 		return "", err
 	}
 
