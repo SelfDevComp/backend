@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -47,20 +46,15 @@ func NewService(
 }
 
 func (s *Service) Login(ctx context.Context, code string) (string, error) {
-	fmt.Printf("authAdapter=%#v\n", s.authAdapter)
 	access, err := s.authAdapter.GetAccess(code, "")
 	if err != nil {
 		return "", err
 	}
 
-	s.logger.Info("get access", zap.String("access_token", access))
-
 	authUser, err := s.authAdapter.GetUserInfo(access)
 	if err != nil {
 		return "", err
 	}
-
-	s.logger.Info("get auth user", zap.String("auth sub", authUser.Sub))
 
 	user, err := s.userService.GetUserBySub(ctx, authUser.Sub)
 	if err != nil {
@@ -69,6 +63,8 @@ func (s *Service) Login(ctx context.Context, code string) (string, error) {
 			if err != nil {
 				return "", err
 			}
+		} else {
+			return "", err
 		}
 
 		return "", err
