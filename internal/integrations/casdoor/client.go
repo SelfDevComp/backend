@@ -17,7 +17,7 @@ func newClient(id, secret string) *client {
 
     return &client{
         casdoor: casdoorsdk.NewClient(
-			"https://stage.auth.self-dev.tech",
+			"http://auth:8000",
 			id,
 			secret,
 			"certificate",
@@ -44,7 +44,7 @@ func (c *client) getAccess(code, state string) (string, error) {
 func (c *client) getUserInfo(token string) (AuthUser, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
-		"https://stage.auth.self-dev.tech/api/userinfo",
+		"http://auth:8000/api/userinfo",
 		http.NoBody,
 	)
 	if err != nil {
