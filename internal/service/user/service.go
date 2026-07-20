@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"fmt"
 
 	"go.uber.org/zap"
 
@@ -29,7 +28,7 @@ func NewService(repo Repository, logger *zap.Logger) *Service {
 
 func (s *Service) CreateUser(ctx context.Context, user model.User) (model.User, error) {
 	if err := s.repo.Create(ctx, &user); err != nil {
-		return model.User{}, fmt.Errorf("failed insert user: %w", err)
+		return model.User{}, err
 	}
 
 	return user, nil

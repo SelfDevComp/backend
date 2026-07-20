@@ -36,7 +36,7 @@ func main() {
 
 	logger, err := customLogger.NewLogger(cfg.Logger)
 	if err != nil {
-		log.Fatal("failed create logger", zap.Error(err))
+		log.Fatalf("failed create logger: %v", err)
 	}
 
 	defer func() {
@@ -66,7 +66,7 @@ func main() {
 	authAdapter := authAdapt.NewAdapter(cfg.Auth)
 
 	userService := userSrv.NewService(userRepository, logger)
-	authService := authSrv.NewService(userService, authAdapter, authRepository, cfg.JWT, logger)
+	authService := authSrv.NewService(userService, authAdapter, authRepository, logger)
 	habitService := habitSrv.NewService(habitRepository, userService, logger)
 
 	authHandler := authHand.NewHandler(authService, cfg.Auth.RedirectURI, logger)
@@ -75,11 +75,15 @@ func main() {
 
 	rootMux := http.NewServeMux()
 	handler.RegisterPublicRoutes(rootMux, authHandler)
+
+
 	protectedMux := http.NewServeMux()
 	handler.RegisterProtectedRoutes(protectedMux, userHandler, habitHandler)
+
 	sessionMiddleware := middleware.NewSessionMiddleware(authRepository)
-	rootMux.Handle("/api/", sessionMiddleware.Middleware(protectedMux))
+	rootMux.Handle("/api", sessionMiddleware.Middleware(protectedMux))
 	wrapped := middleware.CORS(rootMux, cfg.Server.Middleware)
+
 	service := &http.Server{
 		Addr:         ":8080",
 		Handler:      wrapped,
@@ -89,7 +93,7 @@ func main() {
 	}
 
 	go func() {
-		logger.Info("service started at port 8080.")
+		logger.Info("service started...")
 
 		if err := service.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Fatal("server failed", zap.Error(err))

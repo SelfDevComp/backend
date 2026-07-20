@@ -25,10 +25,6 @@ type ConfigDatabase struct {
 	RedisURL    string
 }
 
-type ConfigJWT struct {
-	Secret string
-}
-
 type ConfigAuth struct {
 	ClientId     string
 	ClientSecret string
@@ -39,7 +35,6 @@ type config struct {
 	Server   ConfigServer
 	Logger   ConfigLogger
 	Database ConfigDatabase
-	JWT      ConfigJWT
 	Auth     ConfigAuth
 }
 
@@ -67,9 +62,6 @@ func NewConfig() (config, error) {
 		Database: ConfigDatabase{
 			PostgresURL: getEnv("POSTGRES_URL", "postgres://admin:admin@db:5432/self-dev"),
 			RedisURL:    getEnv("REDIS_URL", "redis://:admin@redis:6379/0"),
-		},
-		JWT: ConfigJWT{
-			Secret: getEnv("SECRET", ""),
 		},
 		Auth: ConfigAuth{
 			ClientId:     getEnv("AUTH_CLIENT_ID", ""),
