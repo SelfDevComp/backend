@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -26,45 +27,46 @@ func NewRepository(pool *pgxpool.Pool, logger *zap.Logger) *repository {
 
 func (r *repository) Create(ctx context.Context, user *model.User) error {
 	query := `
-	INSERT INTO users (user_id, sub, username, email)
-	VALUES ($1, $2, $3,	$4)
+	INSERT INTO users (user_id, sub, username)
+	VALUES ($1, $2, $3)
 	`
-
+	r.logger.Info("get user", zap.String("username", user.Username))
 	_, err := r.pool.Exec(
 		ctx,
 		query,
 		user.UserId,
 		user.Sub,
 		user.Username,
-		user.Email,
 	)
 	if err != nil {
 		return err
 	}
 
-	r.logger.Info("success insert user", zap.String("email", user.Email))
 	return nil
 }
 
 func (r *repository) GetBySub(ctx context.Context, sub string) (model.User, error) {
 	query := `
-	SELECT user_id, sub, username, email
+	SELECT user_id, sub, username
 	FROM users
 	WHERE sub = $1
 	LIMIT 1
 	`
-
+	r.logger.Info("get sub", zap.String("sub", sub))
 	var user model.User
 
-	err := r.pool.QueryRow(ctx, query).Scan(
+	err := r.pool.QueryRow(ctx, query, sub).Scan(
 		&user.UserId,
 		&user.Sub,
 		&user.Username,
-		&user.Email,
 	)
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return model.User{}, appErrors.ErrUserNotFound
+	}
+
+	if err != nil {
+		return model.User{}, fmt.Errorf("failed get user: %v", err)
 	}
 
 	return user, nil

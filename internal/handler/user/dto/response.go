@@ -17,7 +17,6 @@ func ToUserResponse(p *model.User) UserResponse {
 	resp := UserResponse{
 		UserId:   p.UserId,
 		Username: p.Username,
-		Email:    p.Email,
 	}
 
 	return resp

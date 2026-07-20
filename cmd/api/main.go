@@ -69,7 +69,7 @@ func main() {
 	authService := authSrv.NewService(userService, authAdapter, authRepository, cfg.JWT, logger)
 	habitService := habitSrv.NewService(habitRepository, userService, logger)
 
-	authHandler := authHand.NewHandler(authService, logger)
+	authHandler := authHand.NewHandler(authService, cfg.Auth.RedirectURI, logger)
 	userHandler := userHand.NewHandler(userService, logger)
 	habitHandler := habitHand.NewHandler(habitService, logger)
 

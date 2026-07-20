@@ -54,12 +54,12 @@ func NewConfig() (config, error) {
 
 	cfg := config{
 		Server: ConfigServer{
-			Host:         getEnv("HOST", "localhost"),
-			Addr:         getEnv("ADDR", ":8080"),
+			Host:         getEnv("HOST", ""),
+			Addr:         getEnv("ADDR", ""),
 			ReadTimeout:  readTimeout,
 			WriteTimeout: writeTimeout,
 			IdleTimeout:  idleTimeout,
-			Middleware:   getEnv("MIDDLEWARE", "http://localhost:80"),
+			Middleware:   getEnv("MIDDLEWARE", ""),
 		},
 		Logger: ConfigLogger{
 			Env: getEnv("ENV", "production"),
@@ -74,6 +74,7 @@ func NewConfig() (config, error) {
 		Auth: ConfigAuth{
 			ClientId:     getEnv("AUTH_CLIENT_ID", ""),
 			ClientSecret: getEnv("AUTH_CLIENT_SECRET", ""),
+			RedirectURI:  getEnv("REDIRECT_URI", ""),
 		},
 	}
 
