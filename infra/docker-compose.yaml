@@ -30,8 +30,8 @@ services:
     environment:
       - GIN_MODE=release
     volumes:
-      - "./infra/conf:/conf"
-      - "./infra/logs:/logs"
+      - "./conf:/conf"
+      - "./logs:/logs"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.auth-stage.rule=Host(`auth.self-dev.test`)"
@@ -54,7 +54,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - "postgres-data:/var/lib/postgresql"
-      - "./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro"
+      - "./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin -d self-dev"]
       interval: 5s

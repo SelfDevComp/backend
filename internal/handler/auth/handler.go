@@ -47,5 +47,5 @@ func (h *handler) Callback(w http.ResponseWriter, r *http.Request) {
 		MaxAge:   30 * 24 * 3600,
 	})
 
-	http.Redirect(w, r, h.redirectURI+"/me/dashboard", http.StatusFound)
+	http.Redirect(w, r, h.redirectURI+"/me/profile", http.StatusFound)
 }

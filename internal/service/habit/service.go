@@ -37,23 +37,18 @@ func NewService(repo HabitRepository, userService UserService, logger *zap.Logge
 	}
 }
 
-func (s *service) GetHabits(ctx context.Context, userId uuid.UUID) ([]model.Habit, error) {
-	habits, err := s.repo.GetHabits(ctx, userId)
+func (s *service) GetHabits(ctx context.Context, userID uuid.UUID) ([]model.Habit, error) {
+	habits, err := s.repo.GetHabits(ctx, userID)
 	if err != nil {
 		return []model.Habit{}, fmt.Errorf("failed get habits: %w", err)
 	}
 
-	s.logger.Info("success get habits", zap.String("user_id", userId.String()))
+	s.logger.Info("success get habits", zap.String("user_id", userID.String()))
 	return habits, nil
 }
 
-func (s *service) CreateHabit(
-	ctx context.Context,
-	userId uuid.UUID,
-	name, description string,
-	isGood bool,
-) (model.Habit, error) {
-	habit, err := model.NewHabit(userId, name, description, isGood)
+func (s *service) CreateHabit(ctx context.Context,userID uuid.UUID,name, description string,isGood bool) (model.Habit, error) {
+	habit, err := model.NewHabit(userID, name, description, isGood)
 	if err != nil {
 		return model.Habit{}, fmt.Errorf("failed create habit: %w", err)
 	}

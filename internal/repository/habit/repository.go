@@ -23,7 +23,7 @@ func NewRepository(pool *pgxpool.Pool, logger *zap.Logger) *repository {
 	}
 }
 
-func (r *repository) GetHabits(ctx context.Context, userId uuid.UUID) ([]model.Habit, error) {
+func (r *repository) GetHabits(ctx context.Context, userID uuid.UUID) ([]model.Habit, error) {
 	query := `
 	SELECT habit_id, name, description, is_good
 	FROM habits
@@ -31,7 +31,7 @@ func (r *repository) GetHabits(ctx context.Context, userId uuid.UUID) ([]model.H
 	ORDER BY created_at DESC
 	`
 
-	rows, err := r.pool.Query(ctx, query, userId)
+	rows, err := r.pool.Query(ctx, query, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get habits: %w", err)
 	}
@@ -59,7 +59,7 @@ func (r *repository) GetHabits(ctx context.Context, userId uuid.UUID) ([]model.H
 		return nil, fmt.Errorf("rows iteration error: %w", err)
 	}
 
-	r.logger.Info("success get habits", zap.String("user_id", userId.String()))
+	r.logger.Info("success get habits", zap.String("user_id", userID.String()))
 	return habits, nil
 }
 

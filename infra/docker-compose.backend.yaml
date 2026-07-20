@@ -3,8 +3,8 @@ name: self-dev
 services:
   backend:
     build:
-      context: .
-      dockerfile: infra/Dockerfile 
+      context: ..
+      dockerfile: infra/Dockerfile
     restart: unless-stopped
     volumes:
       - .env:/app/.env:ro

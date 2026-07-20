@@ -19,7 +19,7 @@ tasks:
   dev:backend-up:
     desc: up backend
     cmds: 
-      - docker compose -f infradocker-compose.backend.yaml up -d
+      - docker compose -f infra/docker-compose.backend.yaml up --build -d
 
   dev:backend-down:
     desc: down backend

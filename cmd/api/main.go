@@ -81,7 +81,7 @@ func main() {
 	handler.RegisterProtectedRoutes(protectedMux, userHandler, habitHandler)
 
 	sessionMiddleware := middleware.NewSessionMiddleware(authRepository)
-	rootMux.Handle("/api", sessionMiddleware.Middleware(protectedMux))
+	rootMux.Handle("/api/", sessionMiddleware.Middleware(protectedMux))
 	wrapped := middleware.CORS(rootMux, cfg.Server.Middleware)
 
 	service := &http.Server{
