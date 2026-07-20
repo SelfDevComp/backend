@@ -31,16 +31,14 @@ func (s *Service) CreateUser(ctx context.Context, user model.User) (model.User, 
 	if err := s.repo.Create(ctx, &user); err != nil {
 		return model.User{}, fmt.Errorf("failed insert user: %w", err)
 	}
-	s.logger.Info("success create user", zap.String("email", user.Username))
+
 	return user, nil
 }
 
 func (s *Service) GetUserBySub(ctx context.Context, userSub string) (model.User, error) {
 	user, err := s.repo.GetBySub(ctx, userSub)
-	s.logger.Info("found user", zap.String("user id", user.Sub), zap.String("usersub", userSub))
 	if err != nil {
 		return model.User{}, err
 	}
-	s.logger.Info("found user", zap.String("user id", user.Sub))
 	return user, nil
 }

@@ -30,7 +30,7 @@ func (r *repository) Create(ctx context.Context, user *model.User) error {
 	INSERT INTO users (user_id, sub, username)
 	VALUES ($1, $2, $3)
 	`
-
+	r.logger.Info("get user", zap.String("username", user.Username))
 	_, err := r.pool.Exec(
 		ctx,
 		query,
@@ -55,7 +55,7 @@ func (r *repository) GetBySub(ctx context.Context, sub string) (model.User, erro
 	r.logger.Info("get sub", zap.String("sub", sub))
 	var user model.User
 
-	err := r.pool.QueryRow(ctx, query).Scan(
+	err := r.pool.QueryRow(ctx, query, sub).Scan(
 		&user.UserId,
 		&user.Sub,
 		&user.Username,
@@ -65,7 +65,7 @@ func (r *repository) GetBySub(ctx context.Context, sub string) (model.User, erro
 		return model.User{}, appErrors.ErrUserNotFound
 	}
 
-	if err != nil { 
+	if err != nil {
 		return model.User{}, fmt.Errorf("failed get user: %v", err)
 	}
 

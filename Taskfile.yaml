@@ -9,17 +9,22 @@ tasks:
   up:
     desc: up auth, redis, db, migrate and traefik and then backend
     cmds:
-      - docker compose -f docker-compose.yaml up -d
+      - docker compose up -d
 
-  # build:
-  #   desc: build backend side for develope
-  #   cmds:
-  #     - docker build -t self-dev-backend -f infra/Dockerfile .
+  down:
+    desc: down all containers
+    cmds:
+      - docker compose down
 
-  # dev:
-  #   desc: run backend in real time for develope
-  #   cmds:
-  #     - go run cmd/api/main.go
+  up:backend:
+    desc: up backend container
+    cmds:
+      - docker compose -f docker-compose.backend.yaml up -d
+
+  down:backend:
+    desc: down backend container
+    cmds:
+      - docker compose -f docker-compose.backend.yaml down
 
   lint:
     desc: formatting project

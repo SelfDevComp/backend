@@ -59,10 +59,9 @@ func (s *Service) Login(ctx context.Context, code string) (string, error) {
 	user, err := s.userService.GetUserBySub(ctx, authUser.Sub)
 	if err != nil {
 		if errors.Is(err, appErrors.ErrUserNotFound) {
-			s.logger.Error("not found user", zap.String("email", authUser.Email), zap.Error(err))
-			user, err = s.userService.CreateUser(ctx, model.NewUser(authUser.Sub, authUser.Name))
+			user, err = s.userService.CreateUser(ctx, model.NewUser(authUser.Sub, authUser.Username))
 			if err != nil {
-				s.logger.Error("failed create user", zap.String("email", authUser.Name), zap.Error(err))
+				s.logger.Error("failed create user", zap.String("username", authUser.Username), zap.Error(err))
 				return "", err
 			}
 		} else {
@@ -71,15 +70,11 @@ func (s *Service) Login(ctx context.Context, code string) (string, error) {
 		return "", err
 	}
 
-	s.logger.Info("user", zap.String("user_id", user.UserId.String()))
-
 	sessionID := uuid.NewString()
 	err = s.repo.CreateSession(ctx, sessionID, user.UserId)
 	if err != nil {
 		return "", err
 	}
-
-	s.logger.Info("session", zap.String("sessionid", sessionID))
 
 	return sessionID, nil
 }

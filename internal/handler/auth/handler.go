@@ -12,19 +12,18 @@ type AuthService interface {
 }
 
 type handler struct {
-	service AuthService
+	service     AuthService
 	redirectURI string
-	logger  *zap.Logger
+	logger      *zap.Logger
 }
 
 func NewHandler(service AuthService, redirectURI string, logger *zap.Logger) *handler {
-	return &handler{service: service, redirectURI: redirectURI,  logger: logger}
+	return &handler{service: service, redirectURI: redirectURI, logger: logger}
 }
 
 func (h *handler) Callback(w http.ResponseWriter, r *http.Request) {
 	code := r.URL.Query().Get("code")
-	h.logger.Info("get code", zap.String("code", code))
-	
+
 	if code == "" {
 		http.Error(w, "missing code", http.StatusBadRequest)
 		return
@@ -41,8 +40,9 @@ func (h *handler) Callback(w http.ResponseWriter, r *http.Request) {
 		Name:     "session",
 		Value:    session,
 		Path:     "/",
+		Domain:   ".self-dev.test",
 		HttpOnly: true,
-		Secure:   true,
+		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
 		MaxAge:   30 * 24 * 3600,
 	})
