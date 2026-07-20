@@ -7,22 +7,22 @@ tasks:
     silent: true
 
   up:
-    desc: up auth, redis, db, migrate and traefik and then backend
+    desc: up (traefik, auth, redis, postgres)
     cmds:
       - docker compose up -d
 
   down:
-    desc: down all containers
-    cmds:
+    desc: down (traefik, auth, redis, postgres)
+    cmds: 
       - docker compose down
 
   up:backend:
-    desc: up backend container
-    cmds:
+    desc: up backend
+    cmds: 
       - docker compose -f docker-compose.backend.yaml up -d
 
   down:backend:
-    desc: down backend container
+    desc: down backend
     cmds:
       - docker compose -f docker-compose.backend.yaml down
 
