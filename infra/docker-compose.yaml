@@ -1,0 +1,107 @@
+name: self-dev
+
+services:
+  traefik:
+    image: traefik:v3.7
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=self-dev"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.self-dev.test`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.service=api@internal"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - self-dev
+
+
+  auth:
+    image: casbin/casdoor:latest
+    restart: unless-stopped
+    environment:
+      - GIN_MODE=release
+    volumes:
+      - "./infra/conf:/conf"
+      - "./infra/logs:/logs"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth-stage.rule=Host(`auth.self-dev.test`)"
+      - "traefik.http.routers.auth-stage.entrypoints=web"
+      - "traefik.http.services.auth-stage.loadbalancer.server.port=8000"
+    networks:
+      - self-dev
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+  db:
+    image: postgres:18-alpine
+    networks:
+      - self-dev
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - "postgres-data:/var/lib/postgresql"
+      - "./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d self-dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    networks:
+      - self-dev
+    volumes:
+      - "redis-data:/data"
+
+  migrate:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+    volumes:
+      - .env:/app/.env:ro
+    profiles:
+      - tools
+
+    entrypoint:
+      - goose
+
+    command:
+      - -dir
+      - /app/migrations
+      - up
+      - postgres
+      - postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+
+    networks:
+      - self-dev
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+    name: "self-dev-postgres"
+  redis-data:
+    name: "self-dev-redis"
+
+networks:
+  self-dev:
+    name: "self-dev"
+    driver: bridge

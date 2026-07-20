@@ -6,25 +6,45 @@ tasks:
       - task --list
     silent: true
 
-  up:
+  dev:up:
     desc: up (traefik, auth, redis, postgres)
     cmds:
-      - docker compose up -d
+      - docker compose -f infra/docker-compose.yaml up -d
 
-  down:
+  dev:down:
     desc: down (traefik, auth, redis, postgres)
     cmds: 
-      - docker compose down
+      - docker compose -f infra/docker-compose.yaml down
 
-  up:backend:
+  dev:backend-up:
     desc: up backend
     cmds: 
-      - docker compose -f docker-compose.backend.yaml up -d
+      - docker compose -f infradocker-compose.backend.yaml up -d
 
-  down:backend:
+  dev:backend-down:
     desc: down backend
     cmds:
-      - docker compose -f docker-compose.backend.yaml down
+      - docker compose -f infra/docker-compose.backend.yaml down
+
+  prod:up:
+    desc: up in production (traefik, auth, redis, postgres)
+    cmds:
+      - docker compose -f infra/docker-compose.prod.yaml up -d
+
+  prod:down:
+    desc: down in production (traefik, auth, redis, postgres)
+    cmds: 
+      - docker compose -f infra/docker-compose.prod.yaml down
+
+  prod:backend-up:
+    desc: up backend in production
+    cmds: 
+      - docker compose -f infradocker-compose.prod.backend.yaml up -d
+
+  prod:backend-down:
+    desc: down backend in production
+    cmds:
+      - docker compose -f infra/docker-compose.prod.backend.yaml down
 
   lint:
     desc: formatting project

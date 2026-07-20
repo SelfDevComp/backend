@@ -5,30 +5,29 @@ services:
     image: traefik:v3.7
     command:
       - "--api.dashboard=true"
-      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-      # - "--entrypoints.websecure.address=:443"
-      # - "--certificatesresolvers.le.acme.email=admin@self-dev.tech"
-      # - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
-      # - "--certificatesresolvers.le.acme.httpchallenge=true"
-      # - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.le.acme.email=admin@self-dev.tech"
+      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.le.acme.httpchallenge=true"
+      - "--certificatesresolvers.le.acme.httpchallenge.entrypoint=web"
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"
-      # - "443:443"
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=self-dev"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.self-dev.test`)"
-      # - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.self-dev.tech`)"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.entrypoints=web"
-      # - "traefik.http.routers.traefik.tls.certresolver=le"
+      - "traefik.http.routers.traefik.tls.certresolver=le"
       - "traefik.http.routers.traefik.service=api@internal"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      # - letsencrypt:/letsencrypt
+      - letsencrypt:/letsencrypt
     networks:
       - self-dev
 
@@ -43,9 +42,9 @@ services:
       - "./infra/logs:/logs"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.auth-stage.rule=Host(`auth.self-dev.test`)"
-      - "traefik.http.routers.auth-stage.entrypoints=web"
-      # - "traefik.http.routers.auth-stage.tls.certresolver=le"
+      - "traefik.http.routers.auth-stage.rule=Host(`auth.self-dev.tech`)"
+      - "traefik.http.routers.auth-stage.entrypoints=websecure"
+      - "traefik.http.routers.auth-stage.tls.certresolver=le"
       - "traefik.http.services.auth-stage.loadbalancer.server.port=8000"
     networks:
       - self-dev
@@ -80,9 +79,7 @@ services:
       - "redis-data:/data"
 
   migrate:
-    build:
-      context: .
-      dockerfile: infra/Dockerfile
+    image: $(BACKEND_IMAGE)
     volumes:
       - .env:/app/.env:ro
     profiles:
@@ -110,8 +107,8 @@ volumes:
     name: "self-dev-postgres"
   redis-data:
     name: "self-dev-redis"
-  # letsencrypt:
-  #   name: "self-dev-letsencrypt"
+  letsencrypt:
+    name: "self-dev-letsencrypt"
 
 networks:
   self-dev:

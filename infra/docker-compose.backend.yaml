@@ -5,7 +5,6 @@ services:
     build:
       context: .
       dockerfile: infra/Dockerfile 
-    # image: ${BACKEND_IMAGE}
     restart: unless-stopped
     volumes:
       - .env:/app/.env:ro
@@ -15,7 +14,6 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.backend-stage.rule=Host(`api.self-dev.test`)"
       - "traefik.http.routers.backend-stage.entrypoints=web"
-      # - "traefik.http.routers.backend-stage.tls.certresolver=le"
       - "traefik.http.services.backend-stage.loadbalancer.server.port=8080"
 
 
