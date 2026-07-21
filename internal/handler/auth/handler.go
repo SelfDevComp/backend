@@ -40,7 +40,7 @@ func (h *handler) Callback(w http.ResponseWriter, r *http.Request) {
 		Name:     "session",
 		Value:    session,
 		Path:     "/",
-		Domain:   ".self-dev.test",
+		Domain:   ".self-dev.tech",
 		HttpOnly: true,
 		Secure:   false,
 		SameSite: http.SameSiteLaxMode,
