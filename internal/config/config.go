@@ -66,7 +66,7 @@ func NewConfig() (config, error) {
 		Auth: ConfigAuth{
 			ClientId:     getEnv("AUTH_CLIENT_ID", ""),
 			ClientSecret: getEnv("AUTH_CLIENT_SECRET", ""),
-			RedirectURI:  getEnv("REDIRECT_URI", ""),
+			RedirectURI:  getEnv("FRONTEND_HOST", ""),
 		},
 	}
 
