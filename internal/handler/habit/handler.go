@@ -128,60 +128,81 @@ func (h *handler) DeleteHabit(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// func (h *handler) ConfirmHabit(w http.ResponseWriter, r *http.Request) {
-// 	habitId, err := GetID(r, "id")
-// 	if err != nil {
-// 		h.logger.Error("invalid id", zap.Error(err))
-// 		http.Error(w, "invalid id", http.StatusBadRequest)
-// 		return
-// 	}
+func (h *handler) ConfirmHabit(w http.ResponseWriter, r *http.Request) {
+	_, ok := r.Context().Value(middleware.UserIDKey{}).(uuid.UUID)
 
-// 	err = h.service.ConfirmHabit(r.Context(), habitId)
-// 	if err != nil {
-// 		h.logger.Error("failed confirm habit", zap.Error(err))
-// 		http.Error(w, "failed confirm habit", http.StatusInternalServerError)
-// 		return
-// 	}
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(http.StatusCreated)
-// }
+	habitId, err := GetID(r, "id")
+	if err != nil {
+		h.logger.Error("invalid id", zap.Error(err))
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
 
-// func (h *handler) CancelHabit(w http.ResponseWriter, r *http.Request) {
-// 	habitId, err := GetID(r, "id")
-// 	if err != nil {
-// 		h.logger.Error("invalid id", zap.Error(err))
-// 		http.Error(w, "invalid id", http.StatusBadRequest)
-// 		return
-// 	}
+	err = h.service.ConfirmHabit(r.Context(), habitId)
+	if err != nil {
+		h.logger.Error("failed confirm habit", zap.Error(err))
+		http.Error(w, "failed confirm habit", http.StatusInternalServerError)
+		return
+	}
 
-// 	err = h.service.CancelHabit(r.Context(), habitId)
-// 	if err != nil {
-// 		h.logger.Error("failed cancel habit", zap.Error(err))
-// 		http.Error(w, "failed cancel habit", http.StatusInternalServerError)
-// 		return
-// 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+}
 
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(http.StatusNoContent)
-// }
+func (h *handler) CancelHabit(w http.ResponseWriter, r *http.Request) {
+	_, ok := r.Context().Value(middleware.UserIDKey{}).(uuid.UUID)
 
-// func (h *handler) GetHabitConfirmDates(w http.ResponseWriter, r *http.Request) {
-// 	habitId, err := GetID(r, "id")
-// 	if err != nil {
-// 		h.logger.Error("invalid id", zap.Error(err))
-// 		http.Error(w, "invalid id", http.StatusBadRequest)
-// 		return
-// 	}
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-// 	dates, err := h.service.GetHabitConfirmDates(r.Context(), habitId)
-// 	if err != nil {
-// 		h.logger.Error("failed get dates", zap.Error(err))
-// 		http.Error(w, "failed get dates", http.StatusInternalServerError)
-// 		return
-// 	}
+	habitId, err := GetID(r, "id")
+	if err != nil {
+		h.logger.Error("invalid id", zap.Error(err))
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
 
-// 	if err = WriteJSON(w, http.StatusOK, dto.ToHabitDatesResponse(dates)); err != nil {
-// 		h.logger.Error("failed create response", zap.String("habit_id", habitId.String()))
-// 	}
-// }
+	err = h.service.CancelHabit(r.Context(), habitId)
+	if err != nil {
+		h.logger.Error("failed cancel habit", zap.Error(err))
+		http.Error(w, "failed cancel habit", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *handler) GetHabitConfirmDates(w http.ResponseWriter, r *http.Request) {
+	_, ok := r.Context().Value(middleware.UserIDKey{}).(uuid.UUID)
+
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	habitId, err := GetID(r, "id")
+	if err != nil {
+		h.logger.Error("invalid id", zap.Error(err))
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+
+	dates, err := h.service.GetHabitConfirmDates(r.Context(), habitId)
+	if err != nil {
+		h.logger.Error("failed get dates", zap.Error(err))
+		http.Error(w, "failed get dates", http.StatusInternalServerError)
+		return
+	}
+
+	if err = WriteJSON(w, http.StatusOK, dto.ToHabitDatesResponse(dates)); err != nil {
+		h.logger.Error("failed create response", zap.String("habit_id", habitId.String()))
+	}
+}
