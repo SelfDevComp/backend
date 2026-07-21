@@ -21,7 +21,7 @@ func newClient(id, secret string) *client {
 			id,
 			secret,
 			"certificate",
-			"built-in",
+			"self-dev",
 			"app-built-in",
 		),
 	}
