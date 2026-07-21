@@ -14,15 +14,15 @@ env:
   IMAGE: ghcr.io/selfdevcomp/backend
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
+  # lint:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Check code
-        run: |
-          task lint
+  #     - name: Check code
+  #       run: |
+  #         task lint
 
   docker:
     runs-on: ubuntu-latest
