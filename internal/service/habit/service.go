@@ -19,21 +19,15 @@ type HabitRepository interface {
 	GetHabitConfirmDates(ctx context.Context, habitId uuid.UUID) ([]model.Date, error)
 }
 
-type UserService interface {
-	// GetById(ctx context.Context, id uuid.UUID) (userModel.User, error)
-}
-
 type service struct {
-	repo        HabitRepository
-	userService UserService
-	logger      *zap.Logger
+	repo   HabitRepository
+	logger *zap.Logger
 }
 
-func NewService(repo HabitRepository, userService UserService, logger *zap.Logger) *service {
+func NewService(repo HabitRepository, logger *zap.Logger) *service {
 	return &service{
-		repo:        repo,
-		userService: userService,
-		logger:      logger,
+		repo:   repo,
+		logger: logger,
 	}
 }
 
@@ -47,7 +41,12 @@ func (s *service) GetHabits(ctx context.Context, userID uuid.UUID) ([]model.Habi
 	return habits, nil
 }
 
-func (s *service) CreateHabit(ctx context.Context,userID uuid.UUID,name, description string,isGood bool) (model.Habit, error) {
+func (s *service) CreateHabit(
+	ctx context.Context,
+	userID uuid.UUID,
+	name, description string,
+	isGood bool,
+) (model.Habit, error) {
 	habit, err := model.NewHabit(userID, name, description, isGood)
 	if err != nil {
 		return model.Habit{}, fmt.Errorf("failed create habit: %w", err)

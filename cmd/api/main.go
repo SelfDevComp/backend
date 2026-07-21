@@ -67,7 +67,7 @@ func main() {
 
 	userService := userSrv.NewService(userRepository, logger)
 	authService := authSrv.NewService(userService, authAdapter, authRepository, logger)
-	habitService := habitSrv.NewService(habitRepository, userService, logger)
+	habitService := habitSrv.NewService(habitRepository, logger)
 
 	authHandler := authHand.NewHandler(authService, cfg.Auth.RedirectURI, logger)
 	userHandler := userHand.NewHandler(userService, logger)
@@ -75,7 +75,6 @@ func main() {
 
 	rootMux := http.NewServeMux()
 	handler.RegisterPublicRoutes(rootMux, authHandler)
-
 
 	protectedMux := http.NewServeMux()
 	handler.RegisterProtectedRoutes(protectedMux, userHandler, habitHandler)
