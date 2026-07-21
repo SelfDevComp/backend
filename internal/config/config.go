@@ -25,10 +25,6 @@ type ConfigDatabase struct {
 	RedisURL    string
 }
 
-type ConfigJWT struct {
-	Secret string
-}
-
 type ConfigAuth struct {
 	ClientId     string
 	ClientSecret string
@@ -39,7 +35,6 @@ type config struct {
 	Server   ConfigServer
 	Logger   ConfigLogger
 	Database ConfigDatabase
-	JWT      ConfigJWT
 	Auth     ConfigAuth
 }
 
@@ -54,12 +49,12 @@ func NewConfig() (config, error) {
 
 	cfg := config{
 		Server: ConfigServer{
-			Host:         getEnv("HOST", "localhost"),
-			Addr:         getEnv("ADDR", ":8080"),
+			Host:         getEnv("HOST", ""),
+			Addr:         getEnv("ADDR", ""),
 			ReadTimeout:  readTimeout,
 			WriteTimeout: writeTimeout,
 			IdleTimeout:  idleTimeout,
-			Middleware:   getEnv("MIDDLEWARE", "http://localhost:80"),
+			Middleware:   getEnv("MIDDLEWARE", ""),
 		},
 		Logger: ConfigLogger{
 			Env: getEnv("ENV", "production"),
@@ -68,12 +63,10 @@ func NewConfig() (config, error) {
 			PostgresURL: getEnv("POSTGRES_URL", "postgres://admin:admin@db:5432/self-dev"),
 			RedisURL:    getEnv("REDIS_URL", "redis://:admin@redis:6379/0"),
 		},
-		JWT: ConfigJWT{
-			Secret: getEnv("SECRET", ""),
-		},
 		Auth: ConfigAuth{
 			ClientId:     getEnv("AUTH_CLIENT_ID", ""),
 			ClientSecret: getEnv("AUTH_CLIENT_SECRET", ""),
+			RedirectURI:  getEnv("REDIRECT_URI", ""),
 		},
 	}
 

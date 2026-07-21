@@ -1,0 +1,23 @@
+name: self-dev
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - .env:/app/.env:ro
+    networks:
+      - self-dev
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend-stage.rule=Host(`api.self-dev.test`)"
+      - "traefik.http.routers.backend-stage.entrypoints=web"
+      - "traefik.http.services.backend-stage.loadbalancer.server.port=8080"
+
+
+networks:
+  self-dev:
+    name: "self-dev"
+    external: true

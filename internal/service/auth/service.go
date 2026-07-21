@@ -7,7 +7,6 @@ import (
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 
-	"github.com/sklyar-vlad/selfDev/internal/config"
 	appErrors "github.com/sklyar-vlad/selfDev/internal/errors"
 	auth "github.com/sklyar-vlad/selfDev/internal/integrations/casdoor"
 	model "github.com/sklyar-vlad/selfDev/internal/model/user"
@@ -31,7 +30,6 @@ type Service struct {
 	userService UserService
 	authAdapter AuthAdapter
 	repo        AuthRepository
-	cfg         config.ConfigJWT
 	logger      *zap.Logger
 }
 
@@ -39,10 +37,9 @@ func NewService(
 	userService UserService,
 	authAdapter AuthAdapter,
 	repo AuthRepository,
-	configJwt config.ConfigJWT,
 	logger *zap.Logger,
 ) *Service {
-	return &Service{userService: userService, authAdapter: authAdapter, repo: repo, cfg: configJwt, logger: logger}
+	return &Service{userService: userService, authAdapter: authAdapter, repo: repo, logger: logger}
 }
 
 func (s *Service) Login(ctx context.Context, code string) (string, error) {
@@ -59,12 +56,13 @@ func (s *Service) Login(ctx context.Context, code string) (string, error) {
 	user, err := s.userService.GetUserBySub(ctx, authUser.Sub)
 	if err != nil {
 		if errors.Is(err, appErrors.ErrUserNotFound) {
-			user, err = s.userService.CreateUser(ctx, model.NewUser(authUser.Sub, authUser.Name, authUser.Email))
+			user, err = s.userService.CreateUser(ctx, model.NewUser(authUser.Sub, authUser.Username))
 			if err != nil {
 				return "", err
 			}
+		} else {
+			return "", err
 		}
-
 		return "", err
 	}
 
@@ -74,5 +72,6 @@ func (s *Service) Login(ctx context.Context, code string) (string, error) {
 		return "", err
 	}
 
+	s.logger.Info("success auth", zap.String("username", user.Username))
 	return sessionID, nil
 }
