@@ -46,6 +46,18 @@ tasks:
     cmds:
       - docker compose -f infra/docker-compose.prod.backend.yaml down
 
+  migration:
+    desc: create new migration file. example "task migration NAME=name_of_migration"
+    cmds:
+      - goose -s create {{.NAME}} sql -dir migrations
+    vars:
+      NAME: '{{.NAME | default "migration"}}'
+
+  migrate:
+    desc: choose last version of migrations
+    cmds:
+      - goose up -env ./infra/.env
+
   lint:
     desc: formatting project
     cmds:

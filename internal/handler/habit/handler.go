@@ -16,7 +16,7 @@ import (
 // TODO: UpdateHabit(ctx context.Context, habitId uuid.UUID) error
 type HabitService interface {
 	GetHabits(ctx context.Context, userId uuid.UUID) ([]model.Habit, error)
-	CreateHabit(ctx context.Context, userId uuid.UUID, name, description string, isGood bool) (model.Habit, error)
+	CreateHabit(ctx context.Context, userId uuid.UUID, name, description, category, color string, isGood bool) (model.Habit, error)
 	DeleteHabit(ctx context.Context, habitId uuid.UUID) error
 	ConfirmHabit(ctx context.Context, habitId uuid.UUID) error
 	CancelHabit(ctx context.Context, habitId uuid.UUID) error
@@ -83,7 +83,7 @@ func (h *handler) CreateHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	habit, err := h.service.CreateHabit(r.Context(), userID, input.Name, input.Description, input.IsGood)
+	habit, err := h.service.CreateHabit(r.Context(), userID, input.Name, input.Description, input.Category, input.Color, input.IsGood)
 	if err != nil {
 		h.logger.Error("failed create habit", zap.Error(err))
 		http.Error(w, "failed create habit", http.StatusInternalServerError)

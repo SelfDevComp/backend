@@ -11,6 +11,8 @@ type Habit struct {
 	UserId      uuid.UUID
 	Name        string
 	Description string
+	Category	string
+	Color		string
 	IsGood      bool
 }
 
@@ -19,6 +21,6 @@ type Date struct {
 	Date    time.Time
 }
 
-func NewHabit(userId uuid.UUID, name, description string, isGood bool) (Habit, error) {
-	return Habit{uuid.New(), userId, name, description, isGood}, nil
+func NewHabit(userId uuid.UUID, name, description, category, color string, isGood bool) (Habit, error) {
+	return Habit{uuid.New(), userId, name, description, category, color, isGood}, nil
 }
