@@ -111,7 +111,7 @@ func (r *repository) UpdateHabit(
 		description,
 		category,
 		color,
-		is_good,
+		is_good
 	`
 
 	var habit model.Habit
@@ -127,7 +127,6 @@ func (r *repository) UpdateHabit(
 		isGood,
 	).Scan(
 		&habit.HabitId,
-		&habit.UserId,
 		&habit.Name,
 		&habit.Description,
 		&habit.Category,
