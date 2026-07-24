@@ -71,7 +71,7 @@ services:
 
   migrate:
     build:
-      context: .
+      context: ..
       dockerfile: infra/Dockerfile
     volumes:
       - .env:/app/.env:ro

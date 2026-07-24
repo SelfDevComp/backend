@@ -1,0 +1,9 @@
+-- +goose Up
+ALTER TABLE habits
+ADD COLUMN IF NOT EXISTS category VARCHAR(20),
+ADD COLUMN IF NOT EXISTS color VARCHAR(7);
+
+-- +goose Down
+ALTER TABLE habits
+DROP COLUMN category,
+DROP COLUMN color;

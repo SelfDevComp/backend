@@ -12,6 +12,8 @@ type HabitResponse struct {
 	HabitId     uuid.UUID `json:"habit_id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
+	Category 	string    `json:"category"`
+	Color		string	  `json:"color"`
 	IsGood      bool      `json:"is_good"`
 }
 type HabitsResponse struct {
@@ -23,6 +25,8 @@ func ToHabitResponse(h model.Habit) HabitResponse {
 		HabitId:     h.HabitId,
 		Name:        h.Name,
 		Description: h.Description,
+		Category:    h.Category,
+		Color: 		 h.Color,
 		IsGood:      h.IsGood,
 	}
 }

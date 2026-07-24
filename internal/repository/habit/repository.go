@@ -25,7 +25,7 @@ func NewRepository(pool *pgxpool.Pool, logger *zap.Logger) *repository {
 
 func (r *repository) GetHabits(ctx context.Context, userID uuid.UUID) ([]model.Habit, error) {
 	query := `
-	SELECT habit_id, name, description, is_good
+	SELECT habit_id, name, description, category, color, is_good
 	FROM habits
 	WHERE user_id = $1
 	ORDER BY created_at DESC
@@ -46,6 +46,8 @@ func (r *repository) GetHabits(ctx context.Context, userID uuid.UUID) ([]model.H
 			&h.HabitId,
 			&h.Name,
 			&h.Description,
+			&h.Category,
+			&h.Color,
 			&h.IsGood,
 		)
 		if err != nil {
@@ -65,11 +67,11 @@ func (r *repository) GetHabits(ctx context.Context, userID uuid.UUID) ([]model.H
 
 func (r *repository) CreateHabit(ctx context.Context, habit model.Habit) error {
 	query := `
-	INSERT INTO habits (user_id, habit_id, name, description, is_good)
-	VALUES ($1, $2, $3, $4, $5)
+	INSERT INTO habits (user_id, habit_id, name, description, category, color, is_good)
+	VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 
-	_, err := r.pool.Exec(ctx, query, habit.UserId, habit.HabitId, habit.Name, habit.Description, habit.IsGood)
+	_, err := r.pool.Exec(ctx, query, habit.UserId, habit.HabitId, habit.Name, habit.Description, habit.Category, habit.Color, habit.IsGood)
 	if err != nil {
 		return fmt.Errorf("failed insert habit: %w", err)
 	}

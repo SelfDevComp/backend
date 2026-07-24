@@ -44,10 +44,10 @@ func (s *service) GetHabits(ctx context.Context, userID uuid.UUID) ([]model.Habi
 func (s *service) CreateHabit(
 	ctx context.Context,
 	userID uuid.UUID,
-	name, description string,
+	name, description, category, color string,
 	isGood bool,
 ) (model.Habit, error) {
-	habit, err := model.NewHabit(userID, name, description, isGood)
+	habit, err := model.NewHabit(userID, name, description, category, color, isGood)
 	if err != nil {
 		return model.Habit{}, fmt.Errorf("failed create habit: %w", err)
 	}
