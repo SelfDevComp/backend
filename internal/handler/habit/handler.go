@@ -16,7 +16,18 @@ import (
 // TODO: UpdateHabit(ctx context.Context, habitId uuid.UUID) error
 type HabitService interface {
 	GetHabits(ctx context.Context, userId uuid.UUID) ([]model.Habit, error)
-	CreateHabit(ctx context.Context, userId uuid.UUID, name, description, category, color string, isGood bool) (model.Habit, error)
+	CreateHabit(
+		ctx context.Context,
+		userId uuid.UUID,
+		name, description, category, color string,
+		isGood bool,
+	) (model.Habit, error)
+	UpdateHabit(
+		ctx context.Context,
+		habitId uuid.UUID,
+		name, description, category, color string,
+		isGood bool,
+	) (model.Habit, error)
 	DeleteHabit(ctx context.Context, habitId uuid.UUID) error
 	ConfirmHabit(ctx context.Context, habitId uuid.UUID) error
 	CancelHabit(ctx context.Context, habitId uuid.UUID) error
@@ -83,7 +94,65 @@ func (h *handler) CreateHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	habit, err := h.service.CreateHabit(r.Context(), userID, input.Name, input.Description, input.Category, input.Color, input.IsGood)
+	habit, err := h.service.CreateHabit(
+		r.Context(),
+		userID,
+		input.Name,
+		input.Description,
+		input.Category,
+		input.Color,
+		input.IsGood,
+	)
+	if err != nil {
+		h.logger.Error("failed create habit", zap.Error(err))
+		http.Error(w, "failed create habit", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+
+	if err = json.NewEncoder(w).Encode(dto.ToHabitResponse(habit)); err != nil {
+		h.logger.Error(
+			"failed create response",
+			zap.String("habit_id", habit.HabitId.String()),
+			zap.Error(err),
+		)
+	}
+}
+
+func (h *handler) UpdateHabit(w http.ResponseWriter, r *http.Request) {
+	_, ok := r.Context().Value(middleware.UserIDKey{}).(uuid.UUID)
+
+	if !ok {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	habitId, err := GetID(r, "id")
+	if err != nil {
+		h.logger.Error("invalid id", zap.Error(err))
+		http.Error(w, "invalid id", http.StatusBadRequest)
+		return
+	}
+
+	var input dto.HabitRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		h.logger.Error("failed decode request", zap.Error(err))
+		http.Error(w, "invalid json", http.StatusBadRequest)
+		return
+	}
+
+	habit, err := h.service.UpdateHabit(
+		r.Context(),
+		habitId,
+		input.Name,
+		input.Description,
+		input.Category,
+		input.Color,
+		input.IsGood,
+	)
 	if err != nil {
 		h.logger.Error("failed create habit", zap.Error(err))
 		http.Error(w, "failed create habit", http.StatusInternalServerError)
