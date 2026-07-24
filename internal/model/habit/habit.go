@@ -11,8 +11,8 @@ type Habit struct {
 	UserId      uuid.UUID
 	Name        string
 	Description string
-	Category	string
-	Color		string
+	Category    string
+	Color       string
 	IsGood      bool
 }
 

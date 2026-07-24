@@ -71,13 +71,78 @@ func (r *repository) CreateHabit(ctx context.Context, habit model.Habit) error {
 	VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 
-	_, err := r.pool.Exec(ctx, query, habit.UserId, habit.HabitId, habit.Name, habit.Description, habit.Category, habit.Color, habit.IsGood)
+	_, err := r.pool.Exec(
+		ctx,
+		query,
+		habit.UserId,
+		habit.HabitId,
+		habit.Name,
+		habit.Description,
+		habit.Category,
+		habit.Color,
+		habit.IsGood,
+	)
 	if err != nil {
 		return fmt.Errorf("failed insert habit: %w", err)
 	}
 
 	r.logger.Info("success insert habit", zap.String("user_id", habit.UserId.String()))
 	return nil
+}
+
+func (r *repository) UpdateHabit(
+	ctx context.Context,
+	habitId uuid.UUID,
+	name, description, category, color string,
+	isGood bool,
+) (model.Habit, error) {
+	query := `
+	UPDATE habits
+	SET
+		name = $2,
+		description = $3,
+		category = $4,
+		color = $5,
+		is_good = $6
+	WHERE habit_id = $1
+	RETURNING
+		habit_id,
+		name,
+		description,
+		category,
+		color,
+		is_good
+	`
+
+	var habit model.Habit
+
+	err := r.pool.QueryRow(
+		ctx,
+		query,
+		habitId,
+		name,
+		description,
+		category,
+		color,
+		isGood,
+	).Scan(
+		&habit.HabitId,
+		&habit.Name,
+		&habit.Description,
+		&habit.Category,
+		&habit.Color,
+		&habit.IsGood,
+	)
+	if err != nil {
+		return model.Habit{}, fmt.Errorf("failed update habit: %w", err)
+	}
+
+	r.logger.Info(
+		"success update habit",
+		zap.String("habit_id", habitId.String()),
+	)
+
+	return habit, nil
 }
 
 func (r *repository) DeleteHabit(ctx context.Context, habitId uuid.UUID) error {

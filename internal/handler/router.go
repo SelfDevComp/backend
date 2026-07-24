@@ -20,6 +20,7 @@ type UserHandler interface {
 type HabitHandler interface {
 	GetHabits(w http.ResponseWriter, r *http.Request)
 	CreateHabit(w http.ResponseWriter, r *http.Request)
+	UpdateHabit(w http.ResponseWriter, r *http.Request)
 	DeleteHabit(w http.ResponseWriter, r *http.Request)
 	ConfirmHabit(w http.ResponseWriter, r *http.Request)
 	CancelHabit(w http.ResponseWriter, r *http.Request)
@@ -41,6 +42,7 @@ func RegisterPublicRoutes(mux *http.ServeMux, authHandler AuthHandler) {
 func RegisterProtectedRoutes(mux *http.ServeMux, userHandler UserHandler, habitHandler HabitHandler) {
 	mux.HandleFunc("GET /api/habits", habitHandler.GetHabits)
 	mux.HandleFunc("POST /api/habit", habitHandler.CreateHabit)
+	mux.HandleFunc("PUT /api/habit/{id}", habitHandler.UpdateHabit)
 	mux.HandleFunc("DELETE /api/habit/{id}", habitHandler.DeleteHabit)
 	mux.HandleFunc("POST /api/habit/{id}/confirm", habitHandler.ConfirmHabit)
 	mux.HandleFunc("DELETE /api/habit/{id}/confirm", habitHandler.CancelHabit)
